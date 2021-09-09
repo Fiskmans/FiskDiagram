@@ -159,7 +159,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="DebugTools.cpp" />
+    <ClCompile Include="DiagramDrawer.cpp" />
     <ClCompile Include="DirectX11Framework.cpp" />
     <ClCompile Include="FileWatcher.cpp" />
     <ClCompile Include="FullscreenRenderer.cpp" />
@@ -186,7 +188,9 @@
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Canvas.h" />
     <ClInclude Include="DebugTools.h" />
+    <ClInclude Include="DiagramDrawer.h" />
     <ClInclude Include="DirectX11Framework.h" />
     <ClInclude Include="FileWatcher.h" />
     <ClInclude Include="FullscreenRenderer.h" />

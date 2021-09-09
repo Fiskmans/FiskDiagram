@@ -7,6 +7,8 @@
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
 
+#include "DiagramDrawer.h"
+
 void SaveImGuiStyle()
 {
 	static_assert(sizeof(char) == 1, "Double check");
@@ -69,7 +71,6 @@ int Run()
 
 	CGraphicsEngine engine;
 
-
 	if (!engine.Init(windowData))
 	{
 		SYSCRASH("Could not start engine");
@@ -82,6 +83,9 @@ int Run()
 	LoadOrDefaultImGuiStyle();
 	ImGui_ImplDX11_Init(engine.GetFrameWork()->GetDevice(), engine.GetFrameWork()->GetContext());
 	ImGui_ImplWin32_Init(engine.GetWindowHandler()->GetWindowHandle());
+
+
+	DiagramDrawer diagram(engine.GetFrameWork());
 
 	MSG windowMessage;
 	WIPE(windowMessage);
@@ -127,12 +131,14 @@ int Run()
 		{
 			PERFORMANCETAG("Engine run");
 			engine.BeginFrame(clearColor);
-			engine.RenderFrame();
 		}
 
 
 		{
 			PERFORMANCETAG("Main loop");
+			diagram.Update();
+			diagram.Render();
+
 			{
 				PERFORMANCETAG("Imgui Drawing [old]");
 				ImGui::Render();

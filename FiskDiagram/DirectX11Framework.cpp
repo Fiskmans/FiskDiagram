@@ -167,15 +167,11 @@ bool DirectX11Framework::Init(void* aWindowHandle)
 	}
 
 
-	if (DebugTools::CommandLineFlags.count(L"-DebugDxDevice") || true)
+	result = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, D3D11_CREATE_DEVICE_DEBUG, nullptr, 0, D3D11_SDK_VERSION, &desc, &mySwapChain, &myDevice, nullptr, &myDeviceContext);
+	if (FAILED(result))
 	{
-		result = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, D3D11_CREATE_DEVICE_DEBUG, nullptr, 0, D3D11_SDK_VERSION, &desc, &mySwapChain, &myDevice, nullptr, &myDeviceContext);
-		if (FAILED(result))
-		{
-			SYSERROR("Could not start requested debug dx device", "");
-		}
+		SYSERROR("Could not start requested debug dx device", "");
 	}
-
 
 
 	if (FAILED(result))
