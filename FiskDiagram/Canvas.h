@@ -23,7 +23,8 @@ public:
 	size_t GetWidth();
 	size_t GetHeight();
 
-	void DrawPixel(size_t aX, size_t aY, V4F aColor);
+	void DrawPixel(int aX, int aY, V4F aColor);
+	void DrawBox(CommonUtilities::Vector2<int> aMin, CommonUtilities::Vector2<int> aMax, V4F aColor, bool aFilled);
 
 private:
 	

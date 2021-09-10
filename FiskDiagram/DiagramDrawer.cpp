@@ -147,5 +147,6 @@ void DiagramDrawer::Render()
 void DiagramDrawer::Redraw()
 {
 	myCanvas.Setup(128, 128, V4F(1, 1, 1, 1));
-	myCanvas.DrawPixel(3, 3, V4F(0, 0, 0, 1));
+
+	myCanvas.DrawBox({ 3, 3 }, {50,50}, V4F(0, 0, 0, 1), true);
 }

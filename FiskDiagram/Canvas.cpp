@@ -50,10 +50,10 @@ ID3D11ShaderResourceView* Canvas::Export(ID3D11Device* aDevice)
 		D3D11_SUBRESOURCE_DATA data;
 		WIPE(data);
 		data.pSysMem = myTexture;
-		data.SysMemPitch = myWidth * sizeof(V3F);
-		data.SysMemSlicePitch = myWidth * myHeight * sizeof(V3F);
+		data.SysMemPitch = myWidth * sizeof(V4F);
+		data.SysMemSlicePitch = myWidth * myHeight * sizeof(V4F);
 
-		
+
 		ID3D11Texture2D* tex;
 		HRESULT res = aDevice->CreateTexture2D(&desc, &data, &tex);
 
@@ -93,7 +93,7 @@ size_t Canvas::GetHeight()
 	return myHeight;
 }
 
-void Canvas::DrawPixel(size_t aX, size_t aY, V4F aColor)
+void Canvas::DrawPixel(int aX, int aY, V4F aColor)
 {
 	if (aX < 0 || aY < 0 || aX >= myWidth || aY >= myHeight)
 	{
@@ -113,5 +113,19 @@ void Canvas::DrawPixel(size_t aX, size_t aY, V4F aColor)
 		break;
 	default:
 		break;
+	}
+}
+
+void Canvas::DrawBox(CommonUtilities::Vector2<int> aMin, CommonUtilities::Vector2<int> aMax, V4F aColor, bool aFilled)
+{
+	if (aFilled)
+	{
+		for (int y = aMin.y; y <= aMax.y; y++)
+		{
+			for (int x = aMin.x; x <= aMax.x; x++)
+			{
+				DrawPixel(x, y, aColor);
+			}
+		}
 	}
 }
