@@ -26,6 +26,7 @@ public:
 	void DrawPixel(int aX, int aY, V4F aColor);
 	void DrawBox(CommonUtilities::Vector2<int> aMin, CommonUtilities::Vector2<int> aMax, V4F aColor, bool aFilled);
 	void DrawText(const std::string& aText, CommonUtilities::Vector2<int> aBottomLeft, V4F	aColor);
+	void DrawLine(CommonUtilities::Vector2<int> aStart, CommonUtilities::Vector2<int> aEnd, V4F aColor, std::vector<bool> aPattern = { true });
 
 private:
 	

@@ -252,3 +252,30 @@ Canvas::DrawText(const std::string& aText, CommonUtilities::Vector2<int> aBottom
 		at.x += glyphSize.x + 1;
 	}
 }
+
+void
+Canvas::DrawLine(CommonUtilities::Vector2<int> aStart, CommonUtilities::Vector2<int> aEnd, V4F aColor, std::vector<bool> aPattern )
+{
+	CommonUtilities::Vector2<int>	start{MIN(aStart.x, aEnd.x), MIN(aStart.y, aEnd.y)};
+	CommonUtilities::Vector2<int>	end{MAX(aStart.x, aEnd.x), MAX(aStart.y, aEnd.y)};
+
+	if (end.x - start.x > end.y - start.y)
+	{
+		for (int x = start.x; x <= end.x; x++)
+		{
+			if (x < 0)
+			{
+				continue;
+			}
+
+			if (aPattern[(x - start.x) % aPattern.size()])
+			{
+				DrawPixel(x, LERP(static_cast<float>(start.y),static_cast<float>(end.y), INVERSELERP(static_cast<float>(start.x),static_cast<float>(end.x),x)), aColor);
+			}
+		}
+	}
+	else
+	{
+	}
+
+}

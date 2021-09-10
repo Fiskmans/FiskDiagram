@@ -152,4 +152,6 @@ void DiagramDrawer::Redraw()
 	myCanvas.DrawBox({ 3, 3 }, {50,50}, V4F(0, 0, 0, 1), true);
 
 	myCanvas.DrawText("Hello world", { 60, 60},V4F(0,0,0,1));
+
+	myCanvas.DrawLine({60,10}, {80,20},V4F(0,0,0,1), {true,true,false,false});
 }
