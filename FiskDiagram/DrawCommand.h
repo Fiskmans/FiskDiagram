@@ -52,3 +52,19 @@ private:
 	Canvas::Point	myPosition;
 	V4F myColor;
 };
+
+class BezierCommand : public DrawCommand
+{
+public:
+	BezierCommand(Canvas::Point aStart,Canvas::Point aC1,Canvas::Point aC2,Canvas::Point aEnd,V4F aColor, Canvas::Pattern aPattern,float aDepth);
+
+	void Draw(Canvas* aCanvas) override;
+
+private:
+	Canvas::Point myStart;
+	Canvas::Point myC1;
+	Canvas::Point myC2;
+	Canvas::Point myEnd;
+	Canvas::Pattern myPattern;
+	V4F myColor;
+};

@@ -49,3 +49,19 @@ TextCommand::Draw(Canvas* aCanvas)
 {
 	aCanvas->DrawText(myText,myPosition,myColor);
 }
+
+BezierCommand::BezierCommand(Canvas::Point aStart, Canvas::Point aC1, Canvas::Point aC2, Canvas::Point aEnd, V4F aColor, Canvas::Pattern aPattern, float aDepth)
+	: myStart(aStart)
+	, myC1(aC1)
+	, myC2(aC2)
+	, myEnd(aEnd)
+	, myColor(aColor)
+	, myPattern(aPattern)
+{
+	myDepth = aDepth;
+}
+
+void BezierCommand::Draw(Canvas* aCanvas)
+{
+	aCanvas->DrawBezier(myStart,myC1,myC2,myEnd,myColor,myPattern);
+}
