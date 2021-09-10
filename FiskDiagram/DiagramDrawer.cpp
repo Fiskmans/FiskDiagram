@@ -4,6 +4,13 @@
 #include <sstream>
 #include <fstream>
 
+#ifdef max
+#undef max
+#endif
+#ifdef min
+#undef min
+#endif
+
 struct VertexBuffer
 {
 	V4F myViewPort;
@@ -12,13 +19,13 @@ struct VertexBuffer
 	V2F padding;
 };
 
-DiagramDrawer::DiagramDrawer(DirectX11Framework* aFrameWork, const std::string& aFile) : myFramework(aFrameWork), myFilePath(aFile)
+DiagramDrawer::DiagramDrawer(DirectX11Framework* aFrameWork, const std::string& aFile) : myFramework(aFrameWork), myFilePath(aFile) , myGraphicsTexture(nullptr)
 {
 	myIsDragging = false;
 	myViewWindow = V4F(0, 0, 1920, 1080);
 	ID3D11Device* device = aFrameWork->GetDevice();
-	Redraw();
-	myGraphicsTexture = myCanvas.Export(device);
+	Reload(myFilePath);
+	myWatchHandle = myWatcher.RegisterCallback(myFilePath, std::bind(&DiagramDrawer::Reload, this,std::placeholders::_1));
 
 	std::vector<char> blob;
 	myVertexShader = GetVertexShader(device, "Data/Shaders/Fullscreen/VertexShader.hlsl", blob);
@@ -87,6 +94,7 @@ DiagramDrawer::DiagramDrawer(DirectX11Framework* aFrameWork, const std::string& 
 
 DiagramDrawer::~DiagramDrawer()
 {
+	myWatcher.UnRegister(myWatchHandle);
 }
 
 void DiagramDrawer::Update()
@@ -100,6 +108,8 @@ void DiagramDrawer::Update()
 		myViewWindow.y -= ImGui::GetIO().MouseDelta.y;
 		myViewWindow.w -= ImGui::GetIO().MouseDelta.y;
 	}
+
+	myWatcher.FlushChanges();
 
 }
 
@@ -148,22 +158,40 @@ void DiagramDrawer::Render()
 	context->Draw(6, 0);
 }
 
-void DiagramDrawer::Redraw()
+void DiagramDrawer::Reload(const std::string aFilePath)
 {
-	myCanvas.Setup(500, 500, V4F(1, 1, 1, 1));
+	std::ifstream				ifs(aFilePath);
+	Draw(Parse(ifs));
+	if (myGraphicsTexture)
+		myGraphicsTexture->Release();
+	myGraphicsTexture = nullptr;
+	myGraphicsTexture = myCanvas.Export(myFramework->GetDevice());
+}
 
-	std::ifstream ifs(myFilePath);
+void DiagramDrawer::Draw(std::vector<DrawCommand*> aDrawList)
+{
+	Canvas::Size size{10, 10};
+	for (DrawCommand*	command : aDrawList)
+	{
+		Canvas::Size max = command->Max();
+		size.x = std::max(size.x, max.x);
+		size.y = std::max(size.y, max.y);
+	}
 
-	std::vector<DrawCommand*> drawList = Parse(ifs);
+	size.x += 30;
+	size.y += 30;
 
-	std::sort(drawList.begin(),drawList.end(),[](DrawCommand* aLHS,DrawCommand* aRHS) { return aLHS->myDepth < aRHS->myDepth; });
+	myCanvas.Setup(size, V4F(1, 1, 1, 1));
 
-	for (DrawCommand* command : drawList)
+
+	std::sort(aDrawList.begin(),aDrawList.end(),[](DrawCommand* aLHS,DrawCommand* aRHS) { return aLHS->myDepth < aRHS->myDepth; });
+
+	for (DrawCommand* command : aDrawList)
 	{
 		command->Draw(&myCanvas);
 		delete command;
 	}
-	drawList.clear();
+	aDrawList.clear();
 }
 
 std::vector<DrawCommand*> DiagramDrawer::Parse(std::istream& aContent)

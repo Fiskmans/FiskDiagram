@@ -10,6 +10,7 @@ public:
 private:
 
 	bool ParseMessage(const std::string& aLine);
+	bool ParseChannel(const std::string& aLine);
 
 	size_t GetChannel(const std::string& aName);
 

@@ -2,6 +2,8 @@
 #include "Canvas.h"
 #include <d3d11.h>
 
+const static Canvas::Size	glyphSize{8, 13};
+
 const unsigned char glyphs[95][13] = {
 	{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, // space :32
 	{0x00, 0x00, 0x18, 0x18, 0x00, 0x00, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18}, // ! :33
@@ -117,13 +119,16 @@ Canvas::~Canvas()
 	delete[] myTexture;
 }
 
-void Canvas::Setup(size_t aWidth, size_t aHeight, V4F aClearColor)
+void Canvas::Setup(Size aSize, V4F aClearColor)
 {
 	if (myTexture)
 		delete[] myTexture;
 
-	myWidth = aWidth;
-	myHeight = aHeight;
+	aSize.x = MAX(1, aSize.x);
+	aSize.y = MAX(1, aSize.y);
+
+	myWidth = aSize.x;
+	myHeight = aSize.y;
 
 	myTexture = new V4F[myWidth * myHeight];
 	for (size_t i = 0; i < myWidth * myHeight; i++)
@@ -255,9 +260,8 @@ void
 Canvas::DrawText(const std::string& aText, Point aBottomLeft, V4F aColor)
 {
 	Point at = aBottomLeft;
-	at.y -= 13;
+	at.y -= glyphSize.y;
 
-	const static CommonUtilities::Vector2<size_t> glyphSize { 8, 13 };
 
 	for (char c : aText)
 	{
@@ -367,6 +371,11 @@ Canvas::DrawBezier(Point aStart, Point aC1, Point aC2, Point aEnd, V4F aColor, P
 			DrawPixel(points[i],aColor);
 		}
 	}
+}
+
+Canvas::Size Canvas::MeasureString(const std::string& aString)
+{
+	return {static_cast<int>(aString.size() * glyphSize.x + (aString.empty() ? 0 : aString.size() - 1)),static_cast<int>(glyphSize.y)};
 }
 
 float Bezier(std::vector<float> aPoints, float aValue)

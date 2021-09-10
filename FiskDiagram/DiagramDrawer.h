@@ -5,6 +5,7 @@
 #include "Canvas.h"
 #include "DrawCommand.h"
 
+
 class DiagramDrawer
 {
 public:
@@ -16,13 +17,16 @@ public:
 
 	void Render();
 private:
-	void Redraw();
+	void Reload(const std::string aFilePath);
+	void Draw(std::vector<DrawCommand*> aDrawList);
 
 	std::vector<DrawCommand*> Parse(std::istream& aContent);
 
 	std::string myFilePath;
 
 	Canvas myCanvas;
+	Tools::FileWatcher myWatcher;
+	Tools::FileWatcher::UniqueID myWatchHandle;
 
 	DirectX11Framework* myFramework;
 	ID3D11ShaderResourceView* myGraphicsTexture;

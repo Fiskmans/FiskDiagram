@@ -18,6 +18,7 @@ public:
 	};
 
 	typedef CommonUtilities::Vector2<int> Point;
+	typedef CommonUtilities::Vector2<int> Size;
 	typedef std::vector<bool> Pattern;
 	
 	struct Patterns
@@ -31,7 +32,7 @@ public:
 	Canvas();
 	~Canvas();
 
-	void Setup(size_t aWidth, size_t aHeight, V4F aClearColor);
+	void Setup(Size aSize, V4F aClearColor);
 
 	ID3D11ShaderResourceView* Export(ID3D11Device* aDevice);
 
@@ -43,6 +44,8 @@ public:
 	void DrawText(const std::string& aText, Point aBottomLeft, V4F	aColor);
 	void DrawLine(Point aStart, Point aEnd, V4F aColor, Pattern aPattern = Patterns::Solid);
 	void DrawBezier(Point aStart,Point aC1,Point aC2,Point aEnd, V4F aColor, Pattern aPattern = Patterns::Solid);
+
+	static Size MeasureString(const std::string& aString);
 
 private:
 

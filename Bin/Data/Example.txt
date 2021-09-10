@@ -1,6 +1,8 @@
-A->B:m
-A-B:m
-A<->B:m
-B->A:p
-B->C:ame
-C->B:test
+[Host]
+[Client]
+Host->Auth:Login
+Auth->Host:Login token
+Blah-blah:blah
+[Someone]
+[Bob]
+Someone->Bob:Hello :)

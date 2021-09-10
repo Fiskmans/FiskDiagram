@@ -7,6 +7,7 @@ public:
 	DrawCommand();
 	virtual ~DrawCommand() = default;
 	virtual void Draw(Canvas* aCanvas) = 0;
+	virtual Canvas::Size Max() = 0;
 	
 	float myDepth;
 };
@@ -17,6 +18,7 @@ public:
 	LineCommand(Canvas::Point aMin, Canvas::Point aMax,V4F aColor, Canvas::Pattern aPattern, float aDepth);
 
 	void Draw(Canvas* aCanvas) override;
+	Canvas::Size Max() override;
 
 private:
 	Canvas::Point	myMin;
@@ -31,6 +33,7 @@ public:
 	BoxCommand(Canvas::Point aMin, Canvas::Point aMax,V4F aColor, bool aFilled, Canvas::Pattern aPattern, float aDepth);
 
 	void Draw(Canvas* aCanvas) override;
+	Canvas::Size Max() override;
 
 private:
 	Canvas::Point	myMin;
@@ -46,6 +49,7 @@ public:
 	TextCommand(const std::string& aText,Canvas::Point aPosition,V4F aColor,float aDepth);
 
 	void Draw(Canvas* aCanvas) override;
+	Canvas::Size Max() override;
 
 private:
 	std::string myText;
@@ -59,6 +63,7 @@ public:
 	BezierCommand(Canvas::Point aStart,Canvas::Point aC1,Canvas::Point aC2,Canvas::Point aEnd,V4F aColor, Canvas::Pattern aPattern,float aDepth);
 
 	void Draw(Canvas* aCanvas) override;
+	Canvas::Size Max() override;
 
 private:
 	Canvas::Point myStart;

@@ -10,18 +10,27 @@
 
 void Diagram::AddLine(const std::string& aLine)
 {
+	if (ParseChannel(aLine))
+		return;
+
 	if (ParseMessage(aLine))
 		return;
+
 }
 
 std::vector<DrawCommand*> Diagram::Finalize()
 {
 	std::vector<DrawCommand*> out;
+	const static int channelWidth = 120;
+	const static int arrowWidth = 5;
+	const static int arrowLength = 10;
 
-	int x = 50;
-	for (Channel& channel : myChannels)
+	int x = 70;
+	for (size_t channelIndex = 0; channelIndex < myChannels.size();channelIndex++)
 	{
-		int y = 30;
+		Channel& channel = myChannels[channelIndex];
+
+		int y = 20;
 		int endofChannel = y;
 		int startOfChannel = y;
 
@@ -32,16 +41,38 @@ std::vector<DrawCommand*> Diagram::Finalize()
 			case Node::Type::Empty:
 				break;
 			case Node::Type::Target:
-				endofChannel = y;
+				endofChannel = y + 2 + arrowWidth;
 				break;
 			case Node::Type::NewChannel:
-				out.push_back(new BoxCommand({x - 30,y},{ x + 30,y + 20},V4F(0,0,0,1),false,Canvas::Patterns::Solid,0.f));
-				out.push_back(new TextCommand(channel.myName,{x - 25,y + 17},V4F(0,0,0,1),1.f));
-				endofChannel = y + 21;
-				startOfChannel = y + 21;
+				out.push_back(new BoxCommand({x - 50,y - 10},{ x + 50,y + 10},V4F(0,0,0,1),false,Canvas::Patterns::Solid,0.f));
+				out.push_back(new TextCommand(channel.myName,{x - Canvas::MeasureString(channel.myName).x / 2,y + 7},V4F(0,0,0,1),1.f));
+				endofChannel = y + 10;
+				startOfChannel = y + 10;
 				break;
 			case Node::Type::Arrow:
-				endofChannel = y;
+			{
+				int other = x + (node.arrow.myTarget - channelIndex) * channelWidth;
+				out.push_back(new LineCommand({x + (node.arrow.myLeftEnabled ? arrowLength : 0), y}, {other - (node.arrow.myRightEnabled ? arrowLength : 0), y}, V4F(0, 0, 0, 1), Canvas::Patterns::Solid, 0.2f));
+				if (node.arrow.myLeftEnabled)
+				{
+					out.push_back(new LineCommand({x, y}, {x + arrowLength, y - arrowWidth}, V4F(0, 0, 0, 1), Canvas::Patterns::Solid, 0.3f));
+					out.push_back(new LineCommand({x, y}, {x + arrowLength, y + arrowWidth}, V4F(0, 0, 0, 1), Canvas::Patterns::Solid, 0.3f));
+					out.push_back(new LineCommand({x + arrowLength, y + arrowWidth}, {x + arrowLength, y - arrowWidth}, V4F(0, 0, 0, 1), Canvas::Patterns::Solid, 0.3f));
+				}
+
+				if (node.arrow.myRightEnabled)
+				{
+					out.push_back(new LineCommand({other - arrowLength, y - arrowWidth}, {other, y}, V4F(0, 0, 0, 1), Canvas::Patterns::Solid, 0.3f));
+					out.push_back(new LineCommand({other - arrowLength, y + arrowWidth}, {other, y}, V4F(0, 0, 0, 1), Canvas::Patterns::Solid, 0.3f));
+					out.push_back(new LineCommand({other - arrowLength, y + arrowWidth}, {other - arrowLength, y - arrowWidth}, V4F(0, 0, 0, 1), Canvas::Patterns::Solid, 0.3f));
+				}
+
+				Canvas::Size size = Canvas::MeasureString(node.arrow.myText);
+
+				out.push_back(new TextCommand(node.arrow.myText,{(x + other - size.x) / 2,y - 2},V4F(0,0,0,1),0.7f));
+
+			}
+				endofChannel = y + 2 + arrowWidth;
 				break;
 			default:
 				break;
@@ -51,11 +82,11 @@ std::vector<DrawCommand*> Diagram::Finalize()
 		}
 
 		out.push_back(new LineCommand({x, startOfChannel},{x, endofChannel},V4F(0,0,0,1),Canvas::Patterns::Dashed, -0.5f));
-		out.push_back(new LineCommand({x - 5, endofChannel},{x + 5, endofChannel},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
-		out.push_back(new LineCommand({x - 5, endofChannel},{x, endofChannel + 5},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
-		out.push_back(new LineCommand({x + 5, endofChannel},{x, endofChannel + 5},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
+		out.push_back(new LineCommand({x - arrowWidth, endofChannel},{x + arrowWidth, endofChannel},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
+		out.push_back(new LineCommand({x - arrowWidth, endofChannel},{x, endofChannel + arrowLength/2},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
+		out.push_back(new LineCommand({x + arrowWidth, endofChannel},{x, endofChannel + arrowLength/2},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
 
-		x += 90;
+		x += channelWidth;
 	}
 
 	return out;
@@ -84,6 +115,10 @@ bool Diagram::ParseMessage(const std::string& aLine)
 
 	size_t channelA = GetChannel(aLine.substr(0,dash - (leftEnabled ? 1 : 0)));
 	size_t channelB = GetChannel(aLine.substr(dash + (rightEnabled ? 2 : 1),colon - (dash + (rightEnabled ? 2 : 1))));
+
+	if (channelA == channelB)
+		return false;
+
 	if (channelB < channelA)
 	{
 		std::swap(channelA,channelB);
@@ -108,6 +143,22 @@ bool Diagram::ParseMessage(const std::string& aLine)
 	}
 
 	PadChannels();
+
+	return true;
+}
+
+bool Diagram::ParseChannel(const std::string& aLine)
+{
+	if (aLine.size() < 3)
+		return false;
+
+	if (aLine.front() != '[')
+		return false;
+
+	if (aLine.back() != ']')
+		return false;
+
+	GetChannel(aLine.substr(1,aLine.size() - 2));
 
 	return true;
 }
