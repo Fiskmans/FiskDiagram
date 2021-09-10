@@ -11,6 +11,7 @@ private:
 
 	bool ParseMessage(const std::string& aLine);
 	bool ParseChannel(const std::string& aLine);
+	bool ParseBox(const std::string& aLine);
 
 	size_t GetChannel(const std::string& aName);
 
@@ -19,15 +20,14 @@ private:
 	struct Node
 	{
 		Node();
-		~Node();
-		Node(const Node& aOther);
 
 		enum class Type
 		{
 			Empty,
 			Target,
 			NewChannel,
-			Arrow
+			Arrow,
+			Box
 
 		} myType;
 
@@ -45,16 +45,24 @@ private:
 		{
 			std::string myName;
 		};
+		struct Box
+		{
+			size_t		myTarget;
+			std::string myText;
+		};
 
 		Empty		empty;
 		Empty		target;
 		NewChannel	newChannel;
 		Arrow		arrow;
+		Box			box;
+
 	};
 
 	struct Channel
 	{
 		std::string myName;
+		bool myHasNamePlate;
 		std::vector<Node> myNodes;
 	};
 

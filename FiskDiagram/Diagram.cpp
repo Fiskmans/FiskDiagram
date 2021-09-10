@@ -16,6 +16,9 @@ void Diagram::AddLine(const std::string& aLine)
 	if (ParseMessage(aLine))
 		return;
 
+	if (ParseBox(aLine))
+		return;
+
 }
 
 std::vector<DrawCommand*> Diagram::Finalize()
@@ -44,10 +47,10 @@ std::vector<DrawCommand*> Diagram::Finalize()
 				endofChannel = y + 2 + arrowWidth;
 				break;
 			case Node::Type::NewChannel:
-				out.push_back(new BoxCommand({x - 50,y - 10},{ x + 50,y + 10},V4F(0,0,0,1),false,Canvas::Patterns::Solid,0.f));
+				out.push_back(new BoxCommand({x - 50,y - 15},{ x + 50,y + 12},V4F(0,0,0,1),false,Canvas::Patterns::Solid,0.f));
 				out.push_back(new TextCommand(channel.myName,{x - Canvas::MeasureString(channel.myName).x / 2,y + 7},V4F(0,0,0,1),1.f));
-				endofChannel = y + 10;
-				startOfChannel = y + 10;
+				endofChannel = y + 12;
+				startOfChannel = y + 12;
 				break;
 			case Node::Type::Arrow:
 			{
@@ -69,10 +72,19 @@ std::vector<DrawCommand*> Diagram::Finalize()
 
 				Canvas::Size size = Canvas::MeasureString(node.arrow.myText);
 
-				out.push_back(new TextCommand(node.arrow.myText,{(x + other - size.x) / 2,y - 2},V4F(0,0,0,1),0.7f));
+				out.push_back(new TextCommand(node.arrow.myText,{x + 5 + arrowLength,y - 2},V4F(0,0,0,1),0.7f));
 
 			}
 				endofChannel = y + 2 + arrowWidth;
+				break;
+			case Node::Type::Box:
+			{
+				int other = x + (node.box.myTarget - channelIndex) * channelWidth;
+
+				out.push_back(new BoxCommand({x - 19, y - 9}, {other + 19, y + 9}, V4F(1, 1, 1, 1), true, Canvas::Patterns::Solid, 0.9f));
+				out.push_back(new BoxCommand({x - 20, y - 10}, {other + 20, y + 10}, V4F(0, 0, 0, 1), false, Canvas::Patterns::Solid, 1.f));
+				out.push_back(new TextCommand(node.box.myText,{ (x + other - Canvas::MeasureString(node.box.myText).x) / 2, y + 7},V4F(0,0,0,1),1.1f));
+			}
 				break;
 			default:
 				break;
@@ -81,7 +93,7 @@ std::vector<DrawCommand*> Diagram::Finalize()
 			y += 30;
 		}
 
-		out.push_back(new LineCommand({x, startOfChannel},{x, endofChannel},V4F(0,0,0,1),Canvas::Patterns::Dashed, -0.5f));
+		out.push_back(new LineCommand({x, startOfChannel},{x, endofChannel},V4F(0.5f,0.5f,0.5f,1),Canvas::Patterns::Dashed, -0.5f));
 		out.push_back(new LineCommand({x - arrowWidth, endofChannel},{x + arrowWidth, endofChannel},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
 		out.push_back(new LineCommand({x - arrowWidth, endofChannel},{x, endofChannel + arrowLength/2},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
 		out.push_back(new LineCommand({x + arrowWidth, endofChannel},{x, endofChannel + arrowLength/2},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
@@ -158,8 +170,78 @@ bool Diagram::ParseChannel(const std::string& aLine)
 	if (aLine.back() != ']')
 		return false;
 
-	GetChannel(aLine.substr(1,aLine.size() - 2));
+	bool quiet = aLine[1] == '*';
+	if (quiet && aLine.length() == 3)
+		return false;
 
+	std::string name = aLine.substr(quiet ? 2 : 1,aLine.size() - (quiet ? 3 : 2));
+
+	for (size_t i = 0; i < myChannels.size(); i++)
+	{
+		if (myChannels[i].myName == name)
+		{
+			return false;
+		}
+	}
+
+	myChannels.push_back(Channel{name, false, {}});
+	Channel& channel = myChannels.back();
+	while (!myChannels[0].myNodes.empty() && channel.myNodes.size() < myChannels[0].myNodes.size() - ( quiet ? 0 : 1))
+	{
+		Node node;
+		node.myType = Node::Type::Empty;
+		channel.myNodes.push_back(node);
+	}
+	if (!quiet)
+	{
+		Node node;
+		node.myType				= Node::Type::NewChannel;
+		node.newChannel.myName	= name;
+		channel.myNodes.push_back(node);
+		channel.myHasNamePlate	= true;
+	}
+	PadChannels();
+
+	return true;
+}
+
+bool Diagram::ParseBox(const std::string& aLine)
+{
+	if (!(aLine.starts_with("Box") || aLine.starts_with("box")))
+		return false;
+
+	size_t colon = aLine.find(":",3);
+	if (colon == aLine.npos)
+		return false;
+
+	if (colon > aLine.length() - 2)
+		return false;
+
+	if (myChannels.empty())
+		return false;
+
+	size_t origin = 0;
+	size_t target = myChannels.size()-1;
+
+	{
+		{
+			Node node;
+			node.myType = Node::Type::Box;
+			node.box.myTarget = myChannels.size() - 1;
+			node.box.myText = aLine.substr(colon+1);
+
+			myChannels[origin].myNodes.push_back(node);
+		}
+		for (size_t i = 1; i <= target; i++)
+		{
+			Node node;
+			node.myType			= Node::Type::Target;
+
+			myChannels[i].myNodes.push_back(node);
+		}
+	}
+
+	PadChannels();
 	return true;
 }
 
@@ -169,10 +251,28 @@ size_t Diagram::GetChannel(const std::string& aName)
 	{
 		if (myChannels[i].myName == aName)
 		{
+			if (!myChannels[i].myHasNamePlate)
+			{
+				if (myChannels[i].myNodes.back().myType == Node::Type::Empty)
+				{
+					myChannels[i].myNodes.back().myType = Node::Type::NewChannel;
+					myChannels[i].myNodes.back().newChannel.myName = aName;
+					myChannels[i].myHasNamePlate = true;
+				}
+				else
+				{
+					Node node;
+					node.myType				= Node::Type::NewChannel;
+					node.newChannel.myName	= aName;
+					myChannels[i].myNodes.push_back(node);
+					myChannels[i].myHasNamePlate	= true;
+					PadChannels();
+				}
+			}
 			return i;
 		}
 	}
-	myChannels.push_back(Channel{aName,{}});
+	myChannels.push_back(Channel{aName,false,{}});
 	Channel& channel = myChannels.back();
 	while (channel.myNodes.size() < myChannels[0].myNodes.size() - 1)
 	{
@@ -185,6 +285,7 @@ size_t Diagram::GetChannel(const std::string& aName)
 		node.myType = Node::Type::NewChannel;
 		node.newChannel.myName = aName;
 		channel.myNodes.push_back(node);
+		channel.myHasNamePlate = true;
 	}
 
 	return myChannels.size() - 1;
@@ -210,17 +311,4 @@ void Diagram::PadChannels()
 
 Diagram::Node::Node() : myType(Type::Empty)
 {
-}
-
-Diagram::Node::~Node()
-{
-}
-
-Diagram::Node::Node(const Node& aOther)
-{
-	myType		= aOther.myType;
-	empty		= aOther.empty;
-	target		= aOther.target;
-	newChannel	= aOther.newChannel;
-	arrow		= aOther.arrow;
 }
