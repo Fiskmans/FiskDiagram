@@ -6,6 +6,7 @@ struct VertexBuffer
 	V4F myViewPort;
 	float myWidth;
 	float myHeight;
+	V2F padding;
 };
 
 DiagramDrawer::DiagramDrawer(DirectX11Framework* aFrameWork) : myFramework(aFrameWork)
@@ -35,7 +36,7 @@ DiagramDrawer::DiagramDrawer(DirectX11Framework* aFrameWork) : myFramework(aFram
 		desc.ByteWidth = sizeof(VertexBuffer);
 		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		desc.Usage = D3D11_USAGE_DYNAMIC;
-		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
 		HRESULT res = device->CreateBuffer(&desc,nullptr,&myVertexBuffer);
 		if (FAILED(res))
@@ -47,7 +48,7 @@ DiagramDrawer::DiagramDrawer(DirectX11Framework* aFrameWork) : myFramework(aFram
 	{
 		D3D11_SAMPLER_DESC desc;
 		WIPE(desc);
-		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 		desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 		desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 		desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -146,7 +147,9 @@ void DiagramDrawer::Render()
 
 void DiagramDrawer::Redraw()
 {
-	myCanvas.Setup(128, 128, V4F(1, 1, 1, 1));
+	myCanvas.Setup(500, 500, V4F(1, 1, 1, 1));
 
 	myCanvas.DrawBox({ 3, 3 }, {50,50}, V4F(0, 0, 0, 1), true);
+
+	myCanvas.DrawText("Hello world", { 60, 60},V4F(0,0,0,1));
 }
