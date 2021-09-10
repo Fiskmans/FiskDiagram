@@ -294,7 +294,7 @@ Canvas::DrawLine(Point aStart, Point aEnd, V4F aColor, Pattern aPattern )
 
 			if (aPattern[(x - start.x) % aPattern.size()])
 			{
-				DrawPixel({x, static_cast<int>(LERP(static_cast<float>(start.y),static_cast<float>(end.y), INVERSELERP(static_cast<float>(start.x),static_cast<float>(end.x),x)))}, aColor);
+				DrawPixel({x, static_cast<int>(LERP(static_cast<float>(start.y) + 0.5f,static_cast<float>(end.y) + 0.5f, INVERSELERP(static_cast<float>(start.x),static_cast<float>(end.x),x)))}, aColor);
 			}
 		}
 	}
@@ -311,7 +311,7 @@ Canvas::DrawLine(Point aStart, Point aEnd, V4F aColor, Pattern aPattern )
 
 			if (aPattern[(y - start.y) % aPattern.size()])
 			{
-				DrawPixel({static_cast<int>(LERP(static_cast<float>(start.x), static_cast<float>(end.x), INVERSELERP(static_cast<float>(start.y), static_cast<float>(end.y), y))), y}, aColor);
+				DrawPixel({static_cast<int>(LERP(static_cast<float>(start.x) + 0.5f, static_cast<float>(end.x) + 0.5f, INVERSELERP(static_cast<float>(start.y), static_cast<float>(end.y), y))), y}, aColor);
 			}
 		}
 	}

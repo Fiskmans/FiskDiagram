@@ -18,11 +18,13 @@ std::vector<DrawCommand*> Diagram::Finalize()
 {
 	std::vector<DrawCommand*> out;
 
-	int x = 30;
+	int x = 50;
 	for (Channel& channel : myChannels)
 	{
 		int y = 30;
-		int lastNotEmpty = y;
+		int endofChannel = y;
+		int startOfChannel = y;
+
 		for (Node& node : channel.myNodes)
 		{
 			switch (node.myType)
@@ -30,17 +32,28 @@ std::vector<DrawCommand*> Diagram::Finalize()
 			case Node::Type::Empty:
 				break;
 			case Node::Type::Target:
-				lastNotEmpty = y;
+				endofChannel = y;
 				break;
 			case Node::Type::NewChannel:
-				out.push_back(new BoxCommand({x,y},{ x + 60,y + 20},V4F(0,0,0,1),false,Canvas::Patterns::Solid,0.f));
-				out.push_back(new TextCommand(channel.myName,{x + 4,y + 17},V4F(0,0,0,1),1.f));
-				lastNotEmpty = y;
+				out.push_back(new BoxCommand({x - 30,y},{ x + 30,y + 20},V4F(0,0,0,1),false,Canvas::Patterns::Solid,0.f));
+				out.push_back(new TextCommand(channel.myName,{x - 25,y + 17},V4F(0,0,0,1),1.f));
+				endofChannel = y + 21;
+				startOfChannel = y + 21;
+				break;
+			case Node::Type::Arrow:
+				endofChannel = y;
 				break;
 			default:
 				break;
 			}
+
+			y += 30;
 		}
+
+		out.push_back(new LineCommand({x, startOfChannel},{x, endofChannel},V4F(0,0,0,1),Canvas::Patterns::Dashed, -0.5f));
+		out.push_back(new LineCommand({x - 5, endofChannel},{x + 5, endofChannel},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
+		out.push_back(new LineCommand({x - 5, endofChannel},{x, endofChannel + 5},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
+		out.push_back(new LineCommand({x + 5, endofChannel},{x, endofChannel + 5},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
 
 		x += 90;
 	}
