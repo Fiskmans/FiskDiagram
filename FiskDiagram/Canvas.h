@@ -15,6 +15,14 @@ public:
 
 	typedef CommonUtilities::Vector2<int> Point;
 	typedef std::vector<bool> Pattern;
+	
+	struct Patterns
+	{
+		const static Canvas::Pattern Solid;
+		const static Canvas::Pattern Dotted;
+		const static Canvas::Pattern Dashed;
+		const static Canvas::Pattern Striped;
+	};
 
 	Canvas();
 	~Canvas();
@@ -27,10 +35,10 @@ public:
 	size_t GetHeight();
 
 	void DrawPixel(Point aPoint, V4F aColor);
-	void DrawBox(Point aMin, Point aMax, V4F aColor, bool aFilled);
+	void DrawBox(Point aMin, Point aMax, V4F aColor, bool aFilled, Pattern aPattern = Patterns::Solid);
 	void DrawText(const std::string& aText, Point aBottomLeft, V4F	aColor);
-	void DrawLine(Point aStart, Point aEnd, V4F aColor, Pattern aPattern = { true });
-	void DrawBezier(Point aStart,Point aC1,Point aC2,Point aEnd, V4F aColor, Pattern aPattern = { true });
+	void DrawLine(Point aStart, Point aEnd, V4F aColor, Pattern aPattern = Patterns::Solid);
+	void DrawBezier(Point aStart,Point aC1,Point aC2,Point aEnd, V4F aColor, Pattern aPattern = Patterns::Solid);
 
 private:
 

@@ -99,6 +99,10 @@ const unsigned char glyphs[95][13] = {
 	{0x00, 0x00, 0xf0, 0x18, 0x18, 0x18, 0x1c, 0x0f, 0x1c, 0x18, 0x18, 0x18, 0xf0},
 	{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x8f, 0xf1, 0x60, 0x00, 0x00, 0x00}};
 
+const Canvas::Pattern	Canvas::Patterns::Solid = { true };
+const Canvas::Pattern	Canvas::Patterns::Dotted = { true, false };
+const Canvas::Pattern	Canvas::Patterns::Dashed = { true, true, false, false };
+const Canvas::Pattern	Canvas::Patterns::Striped = { true, true, true, false, false, false };
 
 Canvas::Canvas()
 	: myHeight(0)
@@ -214,7 +218,7 @@ void Canvas::DrawPixel(Point aPoint, V4F aColor)
 	}
 }
 
-void Canvas::DrawBox(Point aMin, Point aMax, V4F aColor, bool aFilled)
+void Canvas::DrawBox(Point aMin, Point aMax, V4F aColor, bool aFilled, Pattern aPattern)
 {
 	if (aFilled)
 	{
@@ -230,13 +234,19 @@ void Canvas::DrawBox(Point aMin, Point aMax, V4F aColor, bool aFilled)
 	{
 		for (int y = aMin.y + 1; y <= aMax.y - 1; y++)
 		{
-			DrawPixel({aMin.x, y}, aColor);
-			DrawPixel({aMax.x, y}, aColor);
+			if (aPattern[(y - aMin.y) % aPattern.size()])
+			{
+				DrawPixel({aMin.x, y}, aColor);
+				DrawPixel({aMax.x, y}, aColor);
+			}
 		}
 		for (int x = aMin.x; x <= aMax.x; x++)
 		{
-			DrawPixel({x, aMin.y}, aColor);
-			DrawPixel({x, aMax.y}, aColor);	
+			if (aPattern[(x - aMin.x) % aPattern.size()])
+			{
+				DrawPixel({x, aMin.y}, aColor);
+				DrawPixel({x, aMax.y}, aColor);	
+			}
 		}
 	}
 }
