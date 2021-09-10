@@ -96,10 +96,13 @@ std::vector<DrawCommand*> Diagram::Finalize()
 			y += 30;
 		}
 
-		out.push_back(new LineCommand({x, startOfChannel},{x, endofChannel},V4F(0.5f,0.5f,0.5f,1),Canvas::Patterns::Dashed, -0.5f));
-		out.push_back(new LineCommand({x - arrowWidth, endofChannel},{x + arrowWidth, endofChannel},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
-		out.push_back(new LineCommand({x - arrowWidth, endofChannel},{x, endofChannel + arrowLength/2},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
-		out.push_back(new LineCommand({x + arrowWidth, endofChannel},{x, endofChannel + arrowLength/2},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
+		if (endofChannel > startOfChannel)
+		{
+			out.push_back(new LineCommand({x, startOfChannel},{x, endofChannel},V4F(0.5f,0.5f,0.5f,1),Canvas::Patterns::Dashed, -0.5f));
+			out.push_back(new LineCommand({x - arrowWidth, endofChannel},{x + arrowWidth, endofChannel},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
+			out.push_back(new LineCommand({x - arrowWidth, endofChannel},{x, endofChannel + arrowLength/2},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
+			out.push_back(new LineCommand({x + arrowWidth, endofChannel},{x, endofChannel + arrowLength/2},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
+		}
 
 		x += channelWidth;
 	}
@@ -175,7 +178,11 @@ bool Diagram::ParseChannel(const std::string& aLine)
 
 	bool quiet = aLine[1] == '*';
 	if (quiet && aLine.length() == 3)
-		return false;
+	{
+		static size_t counter = 0;
+		myChannels.push_back(Channel{"PaddingChannel_" + std::to_string(counter++), false, {}});
+		return true;
+	}
 
 	std::string name = aLine.substr(quiet ? 2 : 1,aLine.size() - (quiet ? 3 : 2));
 
@@ -234,7 +241,7 @@ bool Diagram::ParseBox(const std::string& aLine)
 
 
 		size_t comma = aLine.find(",",4);
-		if (comma != aLine.npos || comma > colon)
+		if (comma != aLine.npos && comma < colon)
 		{
 			origin = GetChannel(aLine.substr(4, comma - 4));
 			target = GetChannel(aLine.substr(comma + 1, colon - comma - 1));

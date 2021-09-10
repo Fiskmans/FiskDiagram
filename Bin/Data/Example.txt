@@ -1,4 +1,7 @@
-[*C]
-[A]
-[B]
-Box,A,B:Hello
+[*Alpha]
+[Beta]
+[Delta]
+[*]
+[*]
+[Gamma]
+Box,Beta,Elipson:Some Text
