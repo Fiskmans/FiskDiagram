@@ -10,6 +10,9 @@
 
 void Diagram::AddLine(const std::string& aLine)
 {
+	if (aLine.starts_with("#") ||aLine.starts_with("//"))
+		return;
+
 	if (ParseChannel(aLine))
 		return;
 
@@ -217,27 +220,41 @@ bool Diagram::ParseBox(const std::string& aLine)
 	if (colon > aLine.length() - 2)
 		return false;
 
+
 	if (myChannels.empty())
 		return false;
 
 	size_t origin = 0;
 	size_t target = myChannels.size()-1;
 
+	if (colon > 3)
+	{
+		if (aLine[3] != ',')
+			return false;
+
+
+		size_t comma = aLine.find(",",4);
+		if (comma != aLine.npos || comma > colon)
+		{
+			origin = GetChannel(aLine.substr(4, comma - 4));
+			target = GetChannel(aLine.substr(comma + 1, colon - comma - 1));
+		}
+		else
+		{
+			origin = GetChannel(aLine.substr(4,colon-4));
+		}
+
+
+	}
+
 	{
 		{
 			Node node;
 			node.myType = Node::Type::Box;
-			node.box.myTarget = myChannels.size() - 1;
+			node.box.myTarget = target;
 			node.box.myText = aLine.substr(colon+1);
 
 			myChannels[origin].myNodes.push_back(node);
-		}
-		for (size_t i = 1; i <= target; i++)
-		{
-			Node node;
-			node.myType			= Node::Type::Target;
-
-			myChannels[i].myNodes.push_back(node);
 		}
 	}
 
