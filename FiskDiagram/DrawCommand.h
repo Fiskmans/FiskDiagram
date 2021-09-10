@@ -24,3 +24,18 @@ private:
 	V4F myColor;
 	Canvas::Pattern myPattern;
 };
+
+class BoxCommand : public DrawCommand
+{
+public:
+	BoxCommand(Canvas::Point aMin, Canvas::Point aMax,V4F aColor, bool aFilled, Canvas::Pattern aPattern, float aDepth);
+
+	void Draw(Canvas* aCanvas) override;
+
+private:
+	Canvas::Point	myMin;
+	Canvas::Point	myMax;
+	V4F myColor;
+	bool myFilled;
+	Canvas::Pattern myPattern;
+};

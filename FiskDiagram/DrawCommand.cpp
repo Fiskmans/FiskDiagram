@@ -19,3 +19,19 @@ LineCommand::Draw(Canvas* aCanvas)
 {
 	aCanvas->DrawLine(myMin,myMax,myColor,myPattern);
 }
+
+BoxCommand::BoxCommand(Canvas::Point aMin, Canvas::Point aMax, V4F aColor, bool aFilled, Canvas::Pattern aPattern, float aDepth)
+	: myMin(aMin)
+	, myMax(aMax)
+	, myColor(aColor)
+	, myPattern(aPattern)
+	, myFilled(aFilled)
+{
+	myDepth = aDepth;
+}
+
+void
+BoxCommand::Draw(Canvas* aCanvas)
+{
+	aCanvas->DrawBox(myMin,myMax,myColor,myFilled,myPattern);
+}
