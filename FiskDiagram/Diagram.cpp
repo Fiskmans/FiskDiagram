@@ -71,7 +71,7 @@ bool Diagram::ParseMessage(const std::string& aLine)
 	if (colon == aLine.npos)
 		return false;
 
-	if (colon < aLine.length() - 2)
+	if (colon > aLine.length() - 2)
 		return false;
 
 	bool leftEnabled = aLine[dash - 1] == '<';
