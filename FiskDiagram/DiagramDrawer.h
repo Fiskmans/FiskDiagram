@@ -15,6 +15,8 @@ public:
 
 	void Render();
 private:
+	void Redraw();
+
 	Canvas myCanvas;
 
 	DirectX11Framework* myFramework;

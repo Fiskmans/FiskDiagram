@@ -6,6 +6,7 @@ Canvas::Canvas()
 	: myHeight(0)
 	, myWidth(0)
 	, myTexture(nullptr)
+	, myBlendMode(BlendMode::Add)
 {
 }
 
@@ -14,7 +15,7 @@ Canvas::~Canvas()
 	delete[] myTexture;
 }
 
-void Canvas::Setup(size_t aWidth, size_t aHeight, V3F aClearColor)
+void Canvas::Setup(size_t aWidth, size_t aHeight, V4F aClearColor)
 {
 	if (myTexture)
 		delete[] myTexture;
@@ -90,4 +91,27 @@ size_t Canvas::GetWidth()
 size_t Canvas::GetHeight()
 {
 	return myHeight;
+}
+
+void Canvas::DrawPixel(size_t aX, size_t aY, V4F aColor)
+{
+	if (aX < 0 || aY < 0 || aX >= myWidth || aY >= myHeight)
+	{
+		return;
+	}
+	size_t index = aY * myWidth + aX;
+	switch (myBlendMode)
+	{
+	case BlendMode::Add:
+		myTexture[index] = aColor + LERP(myTexture[index], V4F(0, 0, 0, 0), aColor.w);
+		myTexture[index].x = CLAMP(0, 1, myTexture[index].x);
+		myTexture[index].y = CLAMP(0, 1, myTexture[index].y);
+		myTexture[index].z = CLAMP(0, 1, myTexture[index].z);
+		break;
+	case BlendMode::Replace:
+		myTexture[index] = aColor;
+		break;
+	default:
+		break;
+	}
 }

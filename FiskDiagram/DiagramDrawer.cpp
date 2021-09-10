@@ -11,9 +11,9 @@ struct VertexBuffer
 DiagramDrawer::DiagramDrawer(DirectX11Framework* aFrameWork) : myFramework(aFrameWork)
 {
 	myIsDragging = false;
-	ID3D11Device* device = aFrameWork->GetDevice();
-	myCanvas.Setup(128, 128, V3F(1, 0, 0));
 	myViewWindow = V4F(0, 0, 1920, 1080);
+	ID3D11Device* device = aFrameWork->GetDevice();
+	Redraw();
 	myGraphicsTexture = myCanvas.Export(device);
 
 	std::vector<char> blob;
@@ -142,4 +142,10 @@ void DiagramDrawer::Render()
 	context->VSSetShader(*myVertexShader,nullptr,0);
 
 	context->Draw(6, 0);
+}
+
+void DiagramDrawer::Redraw()
+{
+	myCanvas.Setup(128, 128, V4F(1, 1, 1, 1));
+	myCanvas.DrawPixel(3, 3, V4F(0, 0, 0, 1));
 }
