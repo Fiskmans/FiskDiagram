@@ -13,6 +13,9 @@ public:
 		Replace
 	};
 
+	typedef CommonUtilities::Vector2<int> Point;
+	typedef std::vector<bool> Pattern;
+
 	Canvas();
 	~Canvas();
 
@@ -23,10 +26,11 @@ public:
 	size_t GetWidth();
 	size_t GetHeight();
 
-	void DrawPixel(int aX, int aY, V4F aColor);
-	void DrawBox(CommonUtilities::Vector2<int> aMin, CommonUtilities::Vector2<int> aMax, V4F aColor, bool aFilled);
-	void DrawText(const std::string& aText, CommonUtilities::Vector2<int> aBottomLeft, V4F	aColor);
-	void DrawLine(CommonUtilities::Vector2<int> aStart, CommonUtilities::Vector2<int> aEnd, V4F aColor, std::vector<bool> aPattern = { true });
+	void DrawPixel(Point aPoint, V4F aColor);
+	void DrawBox(Point aMin, Point aMax, V4F aColor, bool aFilled);
+	void DrawText(const std::string& aText, Point aBottomLeft, V4F	aColor);
+	void DrawLine(Point aStart, Point aEnd, V4F aColor, Pattern aPattern = { true });
+	void DrawBezier(Point aStart,Point aC1,Point aC2,Point aEnd, V4F aColor, Pattern aPattern = { true });
 
 private:
 	

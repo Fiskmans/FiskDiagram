@@ -191,13 +191,13 @@ size_t Canvas::GetHeight()
 	return myHeight;
 }
 
-void Canvas::DrawPixel(int aX, int aY, V4F aColor)
+void Canvas::DrawPixel(Point aPoint, V4F aColor)
 {
-	if (aX < 0 || aY < 0 || aX >= myWidth || aY >= myHeight)
+	if (aPoint.x < 0 || aPoint.y < 0 || aPoint.x >= myWidth || aPoint.y >= myHeight)
 	{
 		return;
 	}
-	size_t index = aY * myWidth + aX;
+	size_t index = aPoint.y * myWidth + aPoint.x;
 	switch (myBlendMode)
 	{
 	case BlendMode::Add:
@@ -214,7 +214,7 @@ void Canvas::DrawPixel(int aX, int aY, V4F aColor)
 	}
 }
 
-void Canvas::DrawBox(CommonUtilities::Vector2<int> aMin, CommonUtilities::Vector2<int> aMax, V4F aColor, bool aFilled)
+void Canvas::DrawBox(Point aMin, Point aMax, V4F aColor, bool aFilled)
 {
 	if (aFilled)
 	{
@@ -222,16 +222,29 @@ void Canvas::DrawBox(CommonUtilities::Vector2<int> aMin, CommonUtilities::Vector
 		{
 			for (int x = aMin.x; x <= aMax.x; x++)
 			{
-				DrawPixel(x, y, aColor);
+				DrawPixel({x, y}, aColor);
 			}
+		}
+	}
+	else
+	{
+		for (int y = aMin.y + 1; y <= aMax.y - 1; y++)
+		{
+			DrawPixel({aMin.x, y}, aColor);
+			DrawPixel({aMax.x, y}, aColor);
+		}
+		for (int x = aMin.x; x <= aMax.x; x++)
+		{
+			DrawPixel({x, aMin.y}, aColor);
+			DrawPixel({x, aMax.y}, aColor);	
 		}
 	}
 }
 
 void
-Canvas::DrawText(const std::string& aText, CommonUtilities::Vector2<int> aBottomLeft, V4F aColor)
+Canvas::DrawText(const std::string& aText, Point aBottomLeft, V4F aColor)
 {
-	CommonUtilities::Vector2<int> at = aBottomLeft;
+	Point at = aBottomLeft;
 
 	const static CommonUtilities::Vector2<size_t> glyphSize { 8, 13 };
 
@@ -245,7 +258,7 @@ Canvas::DrawText(const std::string& aText, CommonUtilities::Vector2<int> aBottom
 				unsigned char bitMask = glyph[glyphSize.y + at.y - y - 1];
 				if ((bitMask & BIT(glyphSize.x + at.x - x - 1)) != 0)
 				{
-					DrawPixel(x, y, aColor);
+					DrawPixel({x, y}, aColor);
 				}
 			}
 		}
@@ -254,10 +267,10 @@ Canvas::DrawText(const std::string& aText, CommonUtilities::Vector2<int> aBottom
 }
 
 void
-Canvas::DrawLine(CommonUtilities::Vector2<int> aStart, CommonUtilities::Vector2<int> aEnd, V4F aColor, std::vector<bool> aPattern )
+Canvas::DrawLine(Point aStart, Point aEnd, V4F aColor, Pattern aPattern )
 {
-	CommonUtilities::Vector2<int>	start{MIN(aStart.x, aEnd.x), MIN(aStart.y, aEnd.y)};
-	CommonUtilities::Vector2<int>	end{MAX(aStart.x, aEnd.x), MAX(aStart.y, aEnd.y)};
+	Point	start{MIN(aStart.x, aEnd.x), MIN(aStart.y, aEnd.y)};
+	Point	end{MAX(aStart.x, aEnd.x), MAX(aStart.y, aEnd.y)};
 
 	if (end.x - start.x > end.y - start.y)
 	{
@@ -270,7 +283,7 @@ Canvas::DrawLine(CommonUtilities::Vector2<int> aStart, CommonUtilities::Vector2<
 
 			if (aPattern[(x - start.x) % aPattern.size()])
 			{
-				DrawPixel(x, LERP(static_cast<float>(start.y),static_cast<float>(end.y), INVERSELERP(static_cast<float>(start.x),static_cast<float>(end.x),x)), aColor);
+				DrawPixel({x, static_cast<int>(LERP(static_cast<float>(start.y),static_cast<float>(end.y), INVERSELERP(static_cast<float>(start.x),static_cast<float>(end.x),x)))}, aColor);
 			}
 		}
 	}
@@ -285,7 +298,7 @@ Canvas::DrawLine(CommonUtilities::Vector2<int> aStart, CommonUtilities::Vector2<
 
 			if (aPattern[(y - start.y) % aPattern.size()])
 			{
-				DrawPixel(LERP(static_cast<float>(start.x), static_cast<float>(end.x), INVERSELERP(static_cast<float>(start.y), static_cast<float>(end.y), y)), y, aColor);
+				DrawPixel({static_cast<int>(LERP(static_cast<float>(start.x), static_cast<float>(end.x), INVERSELERP(static_cast<float>(start.y), static_cast<float>(end.y), y))), y}, aColor);
 			}
 		}
 	}
