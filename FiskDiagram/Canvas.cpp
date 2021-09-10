@@ -304,3 +304,77 @@ Canvas::DrawLine(Point aStart, Point aEnd, V4F aColor, Pattern aPattern )
 	}
 
 }
+
+void
+Canvas::DrawBezier(Point aStart, Point aC1, Point aC2, Point aEnd, V4F aColor, Pattern	aPattern)
+{
+	std::vector<Point> points;
+	points.push_back(BezierInterpolate(aStart,aC1,aC2,aEnd,0.f));
+
+	Point end = BezierInterpolate(aStart,aC1,aC2,aEnd,1.f);
+	float at = 0.f;
+	while (true)
+	{
+		float searchMax = 1.f;
+		float searchMin = at;
+		Point lastPoint = points.back();
+
+		if (lastPoint.x == end.x && lastPoint.y == end.y)
+		{
+			break;
+		}
+
+		while (true)
+		{
+			float	midpoint	  = LERP(searchMin, searchMax, 0.5f);
+			Point	nextPoint	  = BezierInterpolate(aStart, aC1, aC2, aEnd, midpoint);
+
+			if (nextPoint.x == lastPoint.x && nextPoint.y == lastPoint.y)
+			{
+				searchMin = midpoint;
+				continue;
+			}
+
+			if (abs(nextPoint.x - lastPoint.x) > 1 || abs(nextPoint.y - lastPoint.y) > 1)
+			{
+				searchMax = midpoint;
+				continue;
+			}
+
+			points.push_back(nextPoint);
+			at = midpoint;
+			break;
+		}
+	}
+
+	for (size_t i = 0; i < points.size(); i++)
+	{
+		if (aPattern[i%aPattern.size()])
+		{
+			DrawPixel(points[i],aColor);
+		}
+	}
+}
+
+float Bezier(std::vector<float> aPoints, float aValue)
+{
+	std::vector<float> points = aPoints;
+	while (points.size() > 1)
+	{
+		for (size_t i = 0; i < points.size() - 1; i++)
+		{
+			points[i] = LERP(points[i],points[i+1],aValue);
+		}
+		points.pop_back();
+	}
+	return points[0];
+}
+
+Canvas::Point Canvas::BezierInterpolate(Point aStart, Point aC1, Point aC2, Point aEnd, float aValue)
+{
+	return 
+	{
+		static_cast<int>(Bezier({static_cast<float>(aStart.x) + 0.5f, static_cast<float>(aC1.x) + 0.5f, static_cast<float>(aC2.x) + 0.5f, static_cast<float>(aEnd.x) + 0.5f}, aValue)),
+		static_cast<int>(Bezier({static_cast<float>(aStart.y) + 0.5f, static_cast<float>(aC1.y) + 0.5f, static_cast<float>(aC2.y) + 0.5f, static_cast<float>(aEnd.y) + 0.5f}, aValue)),
+	};
+}

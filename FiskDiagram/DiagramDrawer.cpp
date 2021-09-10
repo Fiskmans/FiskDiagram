@@ -154,4 +154,6 @@ void DiagramDrawer::Redraw()
 	myCanvas.DrawText("Hello world", {60, 60},V4F(0,0,0,1));
 
 	myCanvas.DrawLine({60,10}, {80,60},V4F(0,0,0,1), {true,true,false,false});
+
+	myCanvas.DrawBezier({100,100},{150,100},{100,150},{150,150},V4F(0,0,0,1),{true,true,false,false});
 }

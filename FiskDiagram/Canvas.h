@@ -33,6 +33,8 @@ public:
 	void DrawBezier(Point aStart,Point aC1,Point aC2,Point aEnd, V4F aColor, Pattern aPattern = { true });
 
 private:
+
+	Point BezierInterpolate(Point aStart,Point aC1,Point aC2,Point aEnd, float aValue);
 	
 	BlendMode myBlendMode;
 
