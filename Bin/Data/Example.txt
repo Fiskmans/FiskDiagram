@@ -2,6 +2,7 @@
 [Beta]
 [Delta]
 [*]
-[*]
 [Gamma]
 Box,Beta,Elipson:Some Text
+Alpha->Beta:Hello
+Box,Beta,Beta:... 

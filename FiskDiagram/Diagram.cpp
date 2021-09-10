@@ -22,6 +22,8 @@ void Diagram::AddLine(const std::string& aLine)
 	if (ParseBox(aLine))
 		return;
 
+	if(ParseTrash(aLine))
+		return;
 }
 
 std::vector<DrawCommand*> Diagram::Finalize()
@@ -262,6 +264,47 @@ bool Diagram::ParseBox(const std::string& aLine)
 			node.box.myText = aLine.substr(colon+1);
 
 			myChannels[origin].myNodes.push_back(node);
+		}
+
+		{
+			for (size_t i = origin + 1; i <= target; i++)
+			{
+				{
+					Node node;
+					node.myType = Node::Type::BoxTarget;
+					myChannels[i].myNodes.push_back(node);
+				}
+			}
+		}
+	}
+
+	PadChannels();
+	return true;
+}
+
+bool Diagram::ParseTrash(const std::string& aLine)
+{
+	if (myChannels.empty())
+		GetChannel("Dummy");
+	{
+		{
+			Node node;
+			node.myType			= Node::Type::Box;
+			node.box.myTarget	= myChannels.size() - 1;
+			node.box.myText		= aLine;
+
+			myChannels[0].myNodes.push_back(node);
+		}
+
+		{
+			for (size_t i =  1; i < myChannels.size(); i++)
+			{
+				{
+					Node node;
+					node.myType = Node::Type::BoxTarget;
+					myChannels[i].myNodes.push_back(node);
+				}
+			}
 		}
 	}
 

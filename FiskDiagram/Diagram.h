@@ -12,6 +12,7 @@ private:
 	bool ParseMessage(const std::string& aLine);
 	bool ParseChannel(const std::string& aLine);
 	bool ParseBox(const std::string& aLine);
+	bool ParseTrash(const std::string& aLine);
 
 	size_t GetChannel(const std::string& aName);
 
@@ -25,6 +26,7 @@ private:
 		{
 			Empty,
 			Target,
+			BoxTarget,
 			NewChannel,
 			Arrow,
 			Box
@@ -53,6 +55,7 @@ private:
 
 		Empty		empty;
 		Empty		target;
+		Empty		boxTarget;
 		NewChannel	newChannel;
 		Arrow		arrow;
 		Box			box;
