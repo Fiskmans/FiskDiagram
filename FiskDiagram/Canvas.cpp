@@ -255,6 +255,7 @@ void
 Canvas::DrawText(const std::string& aText, Point aBottomLeft, V4F aColor)
 {
 	Point at = aBottomLeft;
+	at.y -= 13;
 
 	const static CommonUtilities::Vector2<size_t> glyphSize { 8, 13 };
 

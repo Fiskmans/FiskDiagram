@@ -8,6 +8,7 @@
 #include "imgui_impl_win32.h"
 
 #include "DiagramDrawer.h"
+#include "Run.h"
 
 void SaveImGuiStyle()
 {
@@ -32,7 +33,17 @@ void LoadOrDefaultImGuiStyle()
 	}
 }
 
-int Run()
+void AttachConsole()
+{
+	AllocConsole();
+
+	FILE* fp;
+	freopen_s(&fp, "CONOUT$", "w", stdout);
+	freopen_s(&fp, "CONIN$", "r", stdin);
+	freopen_s(&fp, "CONOUT$", "w", stderr);
+}
+
+int Run(const char* aFile)
 {
 	const wchar_t* commLine = GetCommandLineW();
 	int argc;
@@ -44,12 +55,7 @@ int Run()
 
 	long long startTime = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()).time_since_epoch().count();
 
-	AllocConsole();
-
-	FILE* fp;
-	freopen_s(&fp, "CONOUT$", "w", stdout);
-	freopen_s(&fp, "CONIN$", "r", stdin);
-	freopen_s(&fp, "CONOUT$", "w", stderr);
+	AttachConsole();
 
 	Logger::SetFilter(Logger::Type::AnyGame | Logger::Type::AnyWarning | Logger::Type::AllSystem & ~Logger::Type::AnyVerbose);
 	Logger::SetHalting(Logger::Type::SystemCrash);
@@ -85,7 +91,7 @@ int Run()
 	ImGui_ImplWin32_Init(engine.GetWindowHandler()->GetWindowHandle());
 
 
-	DiagramDrawer diagram(engine.GetFrameWork());
+	DiagramDrawer diagram(engine.GetFrameWork(), aFile);
 
 	MSG windowMessage;
 	WIPE(windowMessage);
@@ -157,4 +163,14 @@ int Run()
 
 
 	return EXIT_SUCCESS;
+}
+
+int Error()
+{
+	AttachConsole();
+	std::cout << "Invalid arguments" << std::endl << std::endl;
+	std::cout << _EXE_NAME " <Filepath>" << std::endl << std::endl;
+	system("pause");
+
+	return EXIT_FAILURE;
 }

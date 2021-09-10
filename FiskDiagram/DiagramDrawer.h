@@ -8,7 +8,7 @@
 class DiagramDrawer
 {
 public:
-	DiagramDrawer(DirectX11Framework* aFrameWork);
+	DiagramDrawer(DirectX11Framework* aFrameWork, const std::string& aFile);
 	~DiagramDrawer();
 
 
@@ -18,7 +18,9 @@ public:
 private:
 	void Redraw();
 
-	std::vector<DrawCommand*> myDrawList;
+	std::vector<DrawCommand*> Parse(std::istream& aContent);
+
+	std::string myFilePath;
 
 	Canvas myCanvas;
 

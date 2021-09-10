@@ -3,5 +3,6 @@
 #include <iostream>
 
 
-int Run();
+int Run(const char* aFile);
 
+int Error();

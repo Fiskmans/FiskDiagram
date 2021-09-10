@@ -128,7 +128,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_EXE_NAME="$(projectname)$(TargetExt)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
@@ -145,7 +145,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_EXE_NAME="$(projectname)$(TargetExt)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="DebugTools.cpp" />
+    <ClCompile Include="Diagram.cpp" />
     <ClCompile Include="DiagramDrawer.cpp" />
     <ClCompile Include="DirectX11Framework.cpp" />
     <ClCompile Include="DrawCommand.cpp" />
@@ -191,6 +192,7 @@
   <ItemGroup>
     <ClInclude Include="Canvas.h" />
     <ClInclude Include="DebugTools.h" />
+    <ClInclude Include="Diagram.h" />
     <ClInclude Include="DiagramDrawer.h" />
     <ClInclude Include="DirectX11Framework.h" />
     <ClInclude Include="DrawCommand.h" />

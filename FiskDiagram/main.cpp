@@ -5,9 +5,14 @@
 
 int main(int argc, char** argv)
 {
+	if (argc < 2)
+	{
+		return Error();
+	}
+	else
+	{
+		return Run(argv[1]);
+	}
 
-	Run();
-	std::cout << "Hello world" << std::endl;
-
-	return EXIT_SUCCESS;
+	return EXIT_FAILURE;
 }

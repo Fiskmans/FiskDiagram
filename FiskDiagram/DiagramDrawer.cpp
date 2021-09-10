@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "DiagramDrawer.h"
+#include "Diagram.h"
+#include <sstream>
+#include <fstream>
 
 struct VertexBuffer
 {
@@ -9,7 +12,7 @@ struct VertexBuffer
 	V2F padding;
 };
 
-DiagramDrawer::DiagramDrawer(DirectX11Framework* aFrameWork) : myFramework(aFrameWork)
+DiagramDrawer::DiagramDrawer(DirectX11Framework* aFrameWork, const std::string& aFile) : myFramework(aFrameWork), myFilePath(aFile)
 {
 	myIsDragging = false;
 	myViewWindow = V4F(0, 0, 1920, 1080);
@@ -149,17 +152,29 @@ void DiagramDrawer::Redraw()
 {
 	myCanvas.Setup(500, 500, V4F(1, 1, 1, 1));
 
-	myDrawList.push_back(new LineCommand({60, 10}, {10, 60}, V4F(0, 0, 0.8, 1), Canvas::Patterns::Dashed, 0.f));
-	myDrawList.push_back(new BoxCommand({3, 3}, {50, 50}, V4F(0.8, 0, 0, 1), true, Canvas::Patterns::Dashed, 0.f));
-	myDrawList.push_back(new TextCommand("Hello world", {60, 60},V4F(0,0,0,1), 0.f));
-	myDrawList.push_back(new BezierCommand({100,100},{150,100},{100,150},{150,150},V4F(0,0,0,1),Canvas::Patterns::Dashed, 0.f));
+	std::ifstream ifs(myFilePath);
 
-	std::sort(myDrawList.begin(),myDrawList.end(),[](DrawCommand* aLHS,DrawCommand* aRHS) { return aLHS->myDepth < aRHS->myDepth; });
+	std::vector<DrawCommand*> drawList = Parse(ifs);
 
-	for (DrawCommand* command : myDrawList)
+	std::sort(drawList.begin(),drawList.end(),[](DrawCommand* aLHS,DrawCommand* aRHS) { return aLHS->myDepth < aRHS->myDepth; });
+
+	for (DrawCommand* command : drawList)
 	{
 		command->Draw(&myCanvas);
 		delete command;
 	}
-	myDrawList.clear();
+	drawList.clear();
+}
+
+std::vector<DrawCommand*> DiagramDrawer::Parse(std::istream& aContent)
+{
+	Diagram diagram;
+
+	std::string line;
+	while (std::getline(aContent, line))
+	{
+		diagram.AddLine(line);
+	}
+
+	return diagram.Finalize();
 }
