@@ -276,6 +276,18 @@ Canvas::DrawLine(CommonUtilities::Vector2<int> aStart, CommonUtilities::Vector2<
 	}
 	else
 	{
+		for (int y = start.y; y <= end.y; y++)
+		{
+			if (y < 0)
+			{
+				continue;
+			}
+
+			if (aPattern[(y - start.y) % aPattern.size()])
+			{
+				DrawPixel(LERP(static_cast<float>(start.x), static_cast<float>(end.x), INVERSELERP(static_cast<float>(start.y), static_cast<float>(end.y), y)), y, aColor);
+			}
+		}
 	}
 
 }
