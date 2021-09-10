@@ -35,3 +35,17 @@ BoxCommand::Draw(Canvas* aCanvas)
 {
 	aCanvas->DrawBox(myMin,myMax,myColor,myFilled,myPattern);
 }
+
+TextCommand::TextCommand(const std::string& aText, Canvas::Point aPosition, V4F aColor, float aDepth)
+	: myText(aText)
+	, myPosition(aPosition)
+	, myColor(aColor)
+{
+	myDepth = aDepth;
+}
+
+void
+TextCommand::Draw(Canvas* aCanvas)
+{
+	aCanvas->DrawText(myText,myPosition,myColor);
+}

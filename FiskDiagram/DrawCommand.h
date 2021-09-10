@@ -39,3 +39,16 @@ private:
 	bool myFilled;
 	Canvas::Pattern myPattern;
 };
+
+class TextCommand : public DrawCommand
+{
+public:
+	TextCommand(const std::string& aText,Canvas::Point aPosition,V4F aColor,float aDepth);
+
+	void Draw(Canvas* aCanvas) override;
+
+private:
+	std::string myText;
+	Canvas::Point	myPosition;
+	V4F myColor;
+};

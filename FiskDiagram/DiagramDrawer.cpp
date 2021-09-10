@@ -151,6 +151,7 @@ void DiagramDrawer::Redraw()
 
 	myDrawList.push_back(new LineCommand({60, 10}, {10, 60}, V4F(0, 0, 0.8, 1), Canvas::Patterns::Dashed, 0.f));
 	myDrawList.push_back(new BoxCommand({3, 3}, {50, 50}, V4F(0.8, 0, 0, 1), true, Canvas::Patterns::Dashed, 0.f));
+	myDrawList.push_back(new TextCommand("Hello world", {60, 60},V4F(0,0,0,1), 0.f));
 
 	std::sort(myDrawList.begin(),myDrawList.end(),[](DrawCommand* aLHS,DrawCommand* aRHS) { return aLHS->myDepth < aRHS->myDepth; });
 
@@ -160,8 +161,6 @@ void DiagramDrawer::Redraw()
 		delete command;
 	}
 	myDrawList.clear();
-
-	myCanvas.DrawText("Hello world", {60, 60},V4F(0,0,0,1));
 
 	myCanvas.DrawBezier({100,100},{150,100},{100,150},{150,150},V4F(0,0,0,1),{true,true,false,false});
 }

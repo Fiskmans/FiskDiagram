@@ -4,6 +4,10 @@
 struct ID3D11ShaderResourceView;
 struct ID3D11Device;
 
+#ifdef DrawText
+#undef DrawText
+#endif
+
 class Canvas
 {
 public:
