@@ -279,11 +279,11 @@ Canvas::DrawText(const std::string& aText, Point aBottomLeft, V4F aColor)
 void
 Canvas::DrawLine(Point aStart, Point aEnd, V4F aColor, Pattern aPattern )
 {
-	Point	start{MIN(aStart.x, aEnd.x), MIN(aStart.y, aEnd.y)};
-	Point	end{MAX(aStart.x, aEnd.x), MAX(aStart.y, aEnd.y)};
 
-	if (end.x - start.x > end.y - start.y)
+	if (abs(aEnd.x - aStart.x) > abs(aEnd.y - aStart.y))
 	{
+		Point	start{MIN(aStart.x, aEnd.x), aStart.y};
+		Point	end{MAX(aStart.x, aEnd.x), aEnd.y};
 		for (int x = start.x; x <= end.x; x++)
 		{
 			if (x < 0)
@@ -299,6 +299,8 @@ Canvas::DrawLine(Point aStart, Point aEnd, V4F aColor, Pattern aPattern )
 	}
 	else
 	{
+		Point	start{aStart.x, MIN(aStart.y, aEnd.y)};
+		Point	end{aEnd.x, MAX(aStart.y, aEnd.y)};
 		for (int y = start.y; y <= end.y; y++)
 		{
 			if (y < 0)
