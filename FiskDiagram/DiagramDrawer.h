@@ -3,6 +3,7 @@
 #include <d3d11.h>
 #include "ShaderCompiler.h"
 #include "Canvas.h"
+#include "DrawCommand.h"
 
 class DiagramDrawer
 {
@@ -16,6 +17,8 @@ public:
 	void Render();
 private:
 	void Redraw();
+
+	std::vector<DrawCommand*> myDrawList;
 
 	Canvas myCanvas;
 
