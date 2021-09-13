@@ -13,6 +13,17 @@ void Diagram::AddLine(const std::string& aLine)
 	if (aLine.starts_with("#") ||aLine.starts_with("//"))
 		return;
 
+	if (aLine.empty())
+	{
+		for (auto& channel : myChannels)
+		{
+			Node node;
+			node.myType = Node::Type::BoxTarget;
+			channel.myNodes.push_back(node);
+		}
+		return;
+	}
+
 	if (ParseChannel(aLine))
 		return;
 
