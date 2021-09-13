@@ -38,7 +38,7 @@ std::vector<DrawCommand*> Diagram::Finalize()
 	{
 		Channel& channel = myChannels[channelIndex];
 
-		int y = 20;
+		int y = 28;
 		int endofChannel = y;
 		int startOfChannel = y;
 
@@ -84,8 +84,8 @@ std::vector<DrawCommand*> Diagram::Finalize()
 				{
 					size_t startCount = out.size();
 
-					const static int byteSize = 10;
-					int clarifier = x + static_cast<int>(node.arrow.myClarifierColumn - channelIndex) * channelWidth;
+					const static int byteSize = 4;
+					int clarifier = x + static_cast<int>(node.arrow.myClarifierColumn - channelIndex) * channelWidth - 40;
 					
 					Canvas::Size arrowTextSize = Canvas::MeasureString(node.arrow.myText + ":");
 					
@@ -97,23 +97,42 @@ std::vector<DrawCommand*> Diagram::Finalize()
 					size_t total = clarifier;
 					for (auto& label : node.arrow.myClarifierContent)
 					{
-						total += label.myMinSize * byteSize;
+						int width = std::max(static_cast<int>(label.myMinSize) * byteSize, Canvas::MeasureString(std::to_string(label.myMinSize)).x + 5);
+
+						if (label.myMinSize == 0)
+						{
+							width = Canvas::MeasureString(label.myMaxSize).x + 5;
+						}
+
+						total += width;
 					}
 
 					for (size_t i = 0; i < node.arrow.myClarifierContent.size(); i++)
 					{
 						auto& label = node.arrow.myClarifierContent[i];
-						out.push_back(new BoxCommand({clarifier, y - 30}, {clarifier + static_cast<int>(label.myMinSize) * byteSize, y - 10}, V4F(0, 0, 0, 1), false, Canvas::Patterns::Solid, 1.f));
+						int width = std::max(static_cast<int>(label.myMinSize) * byteSize, Canvas::MeasureString(std::to_string(label.myMinSize)).x + 5);
+						
+						if (label.myMinSize == 0)
+						{
+							width = Canvas::MeasureString(label.myMaxSize).x + 5;
+						}
+
+						out.push_back(new BoxCommand({clarifier, y - 30}, {clarifier + width, y - 10}, V4F(0, 0, 0, 1), false, Canvas::Patterns::Solid, 1.f));
 						Canvas::Size textSize = Canvas::MeasureString(label.myLabel);
 
-						if (label.myMaxSize.empty())
+						if (label.myMinSize == 0)
 						{
-							out.push_back(new TextCommand(std::to_string(label.myMinSize), {clarifier + 2, y - 31}, V4F(0, 0, 0, 1), 0.7f));
+							out.push_back(new TextCommand(label.myMaxSize, {clarifier + 3, y - 31}, V4F(0, 0, 0, 1), 0.7f));
+						}
+						else if (label.myMaxSize.empty())
+						{
+							out.push_back(new TextCommand(std::to_string(label.myMinSize), {clarifier + 3, y - 31}, V4F(0, 0, 0, 1), 0.7f));
 						}
 						else
 						{
-							out.push_back(new TextCommand(std::to_string(label.myMinSize) + "-" + label.myMaxSize, {clarifier + 2, y - 31}, V4F(0, 0, 0, 1), 0.7f));
+							out.push_back(new TextCommand(std::to_string(label.myMinSize) + "-" + label.myMaxSize, {clarifier + 3, y - 31}, V4F(0, 0, 0, 1), 0.7f));
 						}
+
 						if (i != 0)
 						{
 							out.push_back(new LineCommand({clarifier,y-30},{clarifier,y - 31 - textSize.y * 3 / 4},V4F(0,0,0,1),Canvas::Patterns::Solid,0.5f));
@@ -122,18 +141,18 @@ std::vector<DrawCommand*> Diagram::Finalize()
 						int labelHeight = y - 6 + textSize.y * static_cast<int>(node.arrow.myClarifierContent.size() - i);
 						out.push_back(new TextCommand(label.myLabel, {static_cast<int>(total) + 5, labelHeight}, V4F(0, 0, 0, 1), 0.7f));
 						out.push_back(new BezierCommand(
-							{ clarifier + static_cast<int>(label.myMinSize) * byteSize / 2, y - 10},
-							{ clarifier + static_cast<int>(label.myMinSize) * byteSize / 2, labelHeight},
-							{ clarifier + static_cast<int>(label.myMinSize) * byteSize / 2, labelHeight - textSize.y / 2},
+							{ clarifier + width / 2, y - 10},
+							{ clarifier + width / 2, labelHeight},
+							{ clarifier + width / 2, labelHeight - textSize.y / 2},
 							{ static_cast<int>(total), labelHeight - textSize.y / 2},
 							V4F(0,0,0,1),
 							Canvas::Patterns::Dotted,
 							0.3f
 							));
-						clarifier += static_cast<int>(label.myMinSize) * byteSize;
+						clarifier += width;
 					}
 
-					Canvas::Point min = {x + static_cast<int>(node.arrow.myClarifierColumn - channelIndex) * channelWidth - 5, y - 44 - 5};
+					Canvas::Point min = {x + static_cast<int>(node.arrow.myClarifierColumn - channelIndex) * channelWidth - 45, y - 44 - 5};
 					Canvas::Point max = {0,0};
 					for (size_t i = startCount; i < out.size(); i++)
 					{
@@ -238,8 +257,6 @@ bool Diagram::ParseMessage(const std::string& aLine)
 					std::string item;
 					while (getline(ss,item,';'))
 					{
-						std::cout << item << std::endl;
-
 						Node::Label label;
 						std::stringstream ss1(item);
 						if (!(ss1 >> label.myMinSize >> label.myLabel))

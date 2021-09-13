@@ -9,7 +9,14 @@ PixelOutput pixelShader(VertexToPixel input)
 	}
 	else
 	{
-		outp.myColor.rgb = float3(0, 0, 0);
+		if(input.myPosition.x % 16 > 8 ^ input.myPosition.y%16 > 8)
+		{
+			outp.myColor.rgb = float3(0.95, 0.95, 0.95);
+		}
+		else
+		{
+			outp.myColor.rgb = float3(0.8, 0.8, 0.8);
+		}
 	}
 	outp.myColor.a = 1;
 	return outp;

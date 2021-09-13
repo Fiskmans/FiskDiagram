@@ -1,8 +1,12 @@
-[*Alpha]
-[Beta]
-[Delta]
-[*]
-[Gamma]
-Box,Beta,Elipson:Some Text
-Alpha->Beta:Hello[1 delim;10 content;4 hash]
-Box,Beta,Beta:...
+[Bob]
+[Alice]
+[*Eve]
+Bob->AuthServer:Im Bob
+AuthServer->Bob:You're Bob[2 id;8 token;4 hash]
+Bob->Alice:Hello
+Validate step
+Alice->AuthServer:Validate
+AuthServer-Alice:He's Bob
+Alice->Bob:I trust you
+Box,Eve,Eve:...
+Eve->Alice:Hello
