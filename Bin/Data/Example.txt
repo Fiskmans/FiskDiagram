@@ -4,5 +4,5 @@
 [*]
 [Gamma]
 Box,Beta,Elipson:Some Text
-Alpha->Beta:Hello
-Box,Beta,Beta:... 
+Alpha->Beta:Hello[1 delim;10 content;4 hash]
+Box,Beta,Beta:...

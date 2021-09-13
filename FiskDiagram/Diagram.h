@@ -33,11 +33,19 @@ private:
 
 		} myType;
 
+		struct Label
+		{
+			size_t		myMinSize;
+			std::string myLabel;
+			std::string	myMaxSize;
+		};
 		struct Arrow
 		{
 			bool		myLeftEnabled;
 			bool		myRightEnabled;
 			size_t		myTarget;
+			size_t		myClarifierColumn;
+			std::vector<Label> myClarifierContent;
 			std::string myText;
 		};
 		struct Empty

@@ -86,6 +86,6 @@ Canvas::Size BezierCommand::Max()
 	return 
 	{
 		std::max(std::max(myStart.x,myC1.x),std::max(myC2.x,myEnd.x)),
-		std::max(std::max(myStart.x,myC1.x),std::max(myC2.x,myEnd.x))
+		std::max(std::max(myStart.y,myC1.y),std::max(myC2.y,myEnd.y))
 	};
 }

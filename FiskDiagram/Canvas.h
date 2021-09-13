@@ -27,6 +27,7 @@ public:
 		const static Canvas::Pattern Dotted;
 		const static Canvas::Pattern Dashed;
 		const static Canvas::Pattern Striped;
+		const static Canvas::Pattern CutLine;
 	};
 
 	Canvas();

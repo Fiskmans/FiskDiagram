@@ -105,6 +105,7 @@ const Canvas::Pattern	Canvas::Patterns::Solid = { true };
 const Canvas::Pattern	Canvas::Patterns::Dotted = { true, false };
 const Canvas::Pattern	Canvas::Patterns::Dashed = { true, true, false, false };
 const Canvas::Pattern	Canvas::Patterns::Striped = { true, true, true, false, false, false };
+const Canvas::Pattern	Canvas::Patterns::CutLine = { true, true, true, true, false, false, true, false, false };
 
 Canvas::Canvas()
 	: myHeight(0)
