@@ -199,9 +199,8 @@ std::vector<DrawCommand*> Diagram::Finalize()
 		if (endofChannel > startOfChannel)
 		{
 			out.push_back(new LineCommand({x, startOfChannel},{x, endofChannel},V4F(0.5f,0.5f,0.5f,1),Canvas::Patterns::Dashed, -0.5f));
-			out.push_back(new LineCommand({x - arrowWidth, endofChannel},{x + arrowWidth, endofChannel},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
-			out.push_back(new LineCommand({x - arrowWidth, endofChannel},{x, endofChannel + arrowLength/2},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
-			out.push_back(new LineCommand({x + arrowWidth, endofChannel},{x, endofChannel + arrowLength/2},V4F(0,0,0,1),Canvas::Patterns::Solid, -0.4f));
+
+			out.push_back(new TriangleCommand({x - arrowWidth, endofChannel}, {x, endofChannel + arrowLength / 2}, {x + arrowWidth, endofChannel}, V4F(0, 0, 0, 1), -0.4f));
 		}
 
 		x += channelWidth;

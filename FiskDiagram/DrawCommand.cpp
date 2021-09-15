@@ -89,3 +89,25 @@ Canvas::Size BezierCommand::Max()
 		std::max(std::max(myStart.y,myC1.y),std::max(myC2.y,myEnd.y))
 	};
 }
+
+TriangleCommand::TriangleCommand(Canvas::Point aA, Canvas::Point aB, Canvas::Point aC, V4F aColor, float aDepth)
+	: myA(aA)
+	, myB(aB)
+	, myC(aC)
+	, myColor(aColor)
+{
+	myDepth = aDepth;
+}
+
+void TriangleCommand::Draw(Canvas* aCanvas)
+{
+	aCanvas->DrawTriangle(myA,myB,myC,myColor);
+}
+
+Canvas::Size TriangleCommand::Max()
+{
+	return {
+		std::max(std::max(myA.x, myB.x),myC.x),
+		std::max(std::max(myA.y, myB.y),myC.y)};
+}
+

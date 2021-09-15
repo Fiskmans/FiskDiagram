@@ -73,3 +73,18 @@ private:
 	Canvas::Pattern myPattern;
 	V4F myColor;
 };
+
+class TriangleCommand : public DrawCommand
+{
+public:
+	TriangleCommand(Canvas::Point aA, Canvas::Point aB, Canvas::Point aC, V4F aColor, float aDepth);
+
+	void Draw(Canvas* aCanvas) override;
+	Canvas::Size Max() override;
+
+private:
+	Canvas::Point	myA;
+	Canvas::Point	myB;
+	Canvas::Point	myC;
+	V4F				myColor;
+};

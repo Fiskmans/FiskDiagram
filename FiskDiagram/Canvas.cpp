@@ -324,6 +324,63 @@ Canvas::DrawLine(Point aStart, Point aEnd, V4F aColor, Pattern aPattern )
 }
 
 void
+Canvas::DrawTriangle(Point aA, Point aB, Point aC, V4F aColor)
+{
+	Point aTop = aA;
+	Point aMiddle = aB;
+	Point aBottom = aC;
+
+	//Small knownsize sort
+	if (aMiddle.y < aTop.y)
+	{
+		std::swap(aMiddle,aTop);
+	}
+	if (aBottom.y < aMiddle.y)
+	{
+		std::swap(aBottom, aMiddle);
+		if (aMiddle.y < aTop.y)
+		{
+			std::swap(aMiddle, aTop);
+		}
+	}
+
+	if (aTop.y != aMiddle.y)
+	{
+		for (int y = aTop.y; y <= aMiddle.y; y++)
+		{
+			DrawLine(
+				{
+					static_cast<int>(LERP(static_cast<float>(aTop.x),static_cast<float>(aMiddle.x),INVERSELERP(static_cast<float>(aTop.y),static_cast<float>(aMiddle.y),static_cast<float>(y)))),
+					y
+				},
+				{
+					static_cast<int>(LERP(static_cast<float>(aTop.x),static_cast<float>(aBottom.x),INVERSELERP(static_cast<float>(aTop.y),static_cast<float>(aBottom.y),static_cast<float>(y)))),
+					y
+				},
+				aColor,
+				Patterns::Solid);
+		}
+	}
+	if (aMiddle.y != aBottom.y)
+	{
+		for (int y = aMiddle.y; y <= aBottom.y; y++)
+		{
+			DrawLine(
+				{
+					static_cast<int>(LERP(static_cast<float>(aMiddle.x),static_cast<float>(aBottom.x),INVERSELERP(static_cast<float>(aMiddle.y),static_cast<float>(aBottom.y),static_cast<float>(y)))),
+					y
+				},
+				{
+					static_cast<int>(LERP(static_cast<float>(aTop.x),static_cast<float>(aBottom.x),INVERSELERP(static_cast<float>(aTop.y),static_cast<float>(aBottom.y),static_cast<float>(y)))),
+					y
+				},
+				aColor,
+				Patterns::Solid);
+		}
+	}
+}
+
+void
 Canvas::DrawBezier(Point aStart, Point aC1, Point aC2, Point aEnd, V4F aColor, Pattern	aPattern)
 {
 	std::vector<Point> points;

@@ -44,6 +44,7 @@ public:
 	void DrawBox(Point aMin, Point aMax, V4F aColor, bool aFilled, Pattern aPattern = Patterns::Solid);
 	void DrawText(const std::string& aText, Point aBottomLeft, V4F	aColor);
 	void DrawLine(Point aStart, Point aEnd, V4F aColor, Pattern aPattern = Patterns::Solid);
+	void DrawTriangle(Point aA,Point aB, Point aC, V4F aColor);
 	void DrawBezier(Point aStart,Point aC1,Point aC2,Point aEnd, V4F aColor, Pattern aPattern = Patterns::Solid);
 
 	static Size MeasureString(const std::string& aString);
